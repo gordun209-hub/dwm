@@ -37,7 +37,7 @@ static const char *fonts[] =
 
 
 /* Theme */
-#include "themes/gruvbox.h"
+#include "themes/darcula.h"
 
 typedef struct {
 	const char *name;
@@ -45,22 +45,12 @@ typedef struct {
 } Sp;
 const char *spcmd1[] = {"st", "-n", "spterm", "-g", "120x34", NULL };
 const char *spcmd2[] = {"st", "-n", "spfm", "-g", "144x41", "-e", "cmus", NULL };
-const char *spcmd3[] = {"pavucontrol", NULL };
-const char *spcmd4[] = {"st", "-n", "spvol", "-g", "144x41", "-e", "pulsemixer", NULL };
-const char *spcmd5[] = {"st", "-n", "sphtop", "-g", "144x41", "-e", "htop", NULL };
-const char *spcmd6[] = {"keepassxc", NULL };
-const char *spcmd7[] = {"nvidia-settings", NULL };
 const char *spcmd8[] = {"st", "-n", "splfub", "-g", "144x41", "-e", "lfub", NULL };
 // const char *spcmd9[] = {"st", "-n", "spnews", "-g", "144x41", "-e", "newsboat", NULL };
 static Sp scratchpads[] = {
 	/* name          cmd  */
 	{"spterm",      spcmd1},
 	{"spranger",    spcmd2},
-	{"pavucontrol",   spcmd3},
-	{"spvol",       spcmd4},
-	{"sphtop",       spcmd5},
-	{"keepassxc",   spcmd6},
-	{"nvidia-settings",   spcmd7},
 	{"splfub",       spcmd8},
 	// {"spnews",       spcmd9},
 };
@@ -82,8 +72,8 @@ static const char *tags[] = { "󰲠","󰲢","󰲤","󰲦","󰲨","󰲪"};
 // static const char *tags[] = { "󰎤","󰎧","󰎪","󰎭","󰎱","󰎳"};
 // static const char *tags[] = { "󰎤 : 󰞷", "󰎧 : 󰨞", "󰎪 : 󰀶", "󰎭 : 󰈹", "󰎱 : 󱓥", "󰎳 : 󰏆", "󰎶 : 󰈦", "󰎹 : 󰓓", "󰎼 : 󰒓","󰽽 : 󰣨" };
 // Underline Tags :
-static const unsigned int ulinepad	= 5;	/* horizontal padding between the underline and tag */
-static const unsigned int ulinestroke	= 2;	/* thickness / height of the underline */
+static const unsigned int ulinepad	= 10;	/* horizontal padding between the underline and tag */
+static const unsigned int ulinestroke	= 4;	/* thickness / height of the underline */
 static const unsigned int ulinevoffset	= 0;	/* how far above the bottom of the bar the line should appear */
 static const int ulineall = 0;	/* 1 to show underline on all tags, 0 for just the active ones */
 
@@ -94,25 +84,11 @@ static const Rule rules[] = {
 	 *	WM_NAME(STRING) = title
 	 */
 	/* class     instance  title           tags mask  isfloating  isterminal  noswallow  monitor */
-	{ "firefox", NULL,     NULL,           1 << 3,    0,          0,          -1,        -1 },
 	{ "obsidian", NULL,     NULL,           1 << 4,    0,          0,          -1,        -1 },
-	{ "Code", NULL,     NULL,           2,    0,          0,          -1,        -1 },
-	{ "Pcmanfm", NULL,     NULL,           1 << 2,    0,          0,          -1,        -1 },
-	{ "kitty",      NULL,     NULL,       0,         0,          1,           0,        -1 },
-  // Scratch Pads
-	{ NULL,      NULL,     "Event Tester", 0,         0,          0,           1,        -1 }, /* xev */
- 	{ NULL,		  "spterm",	NULL,		SPTAG(0),		1,			 -1 },
-	{ NULL,		  "spfm",		NULL,		SPTAG(1),		1,			 -1 },
-	{ NULL,		  "pavucontrol",	NULL,		SPTAG(2),		1,			 -1 },
-	{ NULL,		  "spvol",	NULL,		SPTAG(3),		1,			 -1 },
-	{ NULL,		  "sphtop",	NULL,		SPTAG(4),		1,			 -1 },
-	{ NULL,		  "keepassxc",	NULL,		SPTAG(5),		1,			 -1 },
-	{ NULL,		  "nvidia-settings",	NULL,		SPTAG(6),		1,			 -1 },
-	{ NULL,		  "splfub",	NULL,		SPTAG(7),		1,			 -1 },
 };
 
 /* layout(s) */
-static const float mfact     = 0.50; /* factor of master area size [0.05..0.95] */
+static const float mfact     = 0.60; /* factor of master area size [0.05..0.95] */
 static const int nmaster     = 1;    /* number of clients in master area */
 static const int resizehints = 0;    /* 1 means respect size hints in tiled resizals */
 static const int lockfullscreen = 1; /* 1 will force focus on the fullscreen window */
@@ -153,64 +129,36 @@ static const Layout layouts[] = {
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = { "dmenu_run", NULL };
-static const char *rofi[] = {"/home/kvl/.local/bin/launcher", NULL }; 
-static const char *termcmd[]  = { "kitty", NULL };
+static const char *termcmd[]  = { "st", NULL };
 static const char *firefox[]  = { "firefox", NULL };
-static const char *code[]  = { "vscode", NULL };
-static const char *pcmanfm[]  = { "pcmanfm", NULL };
-static const char *lf[]  = { "kitty", "-e", "lfub", NULL };
+static const char *lf[]  = { "st", "-e", "lfub", NULL };
 static const char *SS[]  = {"flameshot", "gui", NULL}; 
 
 
 #include "movestack.c"
 static Keychord keychords[] = {
 	/* modifier                     key        function        argument */
-  {2, {{ MODKEY,XK_r},{0, XK_r}},      spawn,          {.v = rofi } },
-  {2, {{ MODKEY,XK_r},{0, XK_s}},      spawn,          {.v = SS } },
-  {2, {{ MODKEY,XK_r},{0, XK_d}},      spawn,          {.v = dmenucmd } },
-  {2, {{ MODKEY,XK_r},{0, XK_w}},      spawn,          {.v = firefox } },
-  {2, {{ MODKEY,XK_r},{0, XK_c}},      spawn,          {.v = code } },
-  {2, {{ MODKEY|ShiftMask, XK_r},{0, XK_f}},      spawn,          {.v = pcmanfm } },
-  {2, {{ MODKEY,XK_r},{0, XK_f}},      spawn,          {.v = lf } },
-  {2, {{ MODKEY,XK_r},{0, XK_Return}}, spawn,          {.v = termcmd } },
-  {2, {{ MODKEY,XK_s},{0, XK_Return}},  	   togglescratch,  {.ui = 0 } },
-  {2, {{ MODKEY,XK_s},{0, XK_space}},	   togglescratch,  {.ui = 1 } },
-  {2, {{ MODKEY,XK_s},{0, XK_p}},	   togglescratch,  {.ui = 2 } },
-  {2, {{ MODKEY,XK_s},{0, XK_a}},	   togglescratch,  {.ui = 3 } },
-  {2, {{ MODKEY,XK_s},{0, XK_h}},	   togglescratch,  {.ui = 4 } },
-  {2, {{ MODKEY,XK_s},{0, XK_k}},	   togglescratch,  {.ui = 5 } },
-  {2, {{ MODKEY,XK_s},{0, XK_n}},	   togglescratch,  {.ui = 6 } },
-  {2, {{ MODKEY,XK_s},{0, XK_l}},	   togglescratch,  {.ui = 7 } },
-  // {2, {{ MODKEY,XK_s},{0, XK_n}},	   togglescratch,  {.ui = 8 } },
-  {1, {{ MODKEY,                       XK_a}},      togglebar,      {0} },
-  {1, {{ MODKEY,                       XK_b}},      spawn, SHCMD("pkill dwmbar-colored && xsetroot -name ' ' ") },
-  {1, {{ MODKEY|ShiftMask,             XK_b}},      spawn, SHCMD("dwmbar-colored") },
+  {1, {{ MODKEY,            XK_d}},      spawn,          {.v = dmenucmd } },
+  {1, {{ MODKEY,            XK_w}},      spawn,          {.v = firefox } },
+  {1, {{ MODKEY,            XK_l}},      spawn,          {.v = lf } },
+  {1, {{ MODKEY,       XK_Return}},      spawn,          {.v = termcmd } },
+  {1, {{ MODKEY,            XK_a}},      togglebar,      {0} },
+  {1, {{ MODKEY,            XK_b}},      spawn, SHCMD("pkill dwmbar-colored && xsetroot -name ' ' ") },
+  {1, {{ MODKEY|ShiftMask,  XK_b}},      spawn, SHCMD("dwmbar-colored") },
 	// focusstack :
-  {1, {{ MODKEY,                       XK_j}},      focusstack,     {.i = +1 } },
-  {1, {{ MODKEY,                       XK_k}},      focusstack,     {.i = -1 } },
-  {1, {{ MODKEY|ShiftMask,             XK_j}},      movestack,      {.i = +1 } },
-  {1, {{ MODKEY|ShiftMask,             XK_k}},      movestack,      {.i = -1 } },
-  {1, {{ MODKEY,                       XK_i}},      incnmaster,     {.i = +1 } },
-  {1, {{ MODKEY,                       XK_d}},      incnmaster,     {.i = -1 } },
-  {1, {{ MODKEY,                       XK_h}},      setmfact,       {.f = -0.05} },
-  {1, {{ MODKEY,                       XK_l}},      setmfact,       {.f = +0.05} },
-  {1, {{ MODKEY|ShiftMask,             XK_Tab}},    zoom,           {0} },
-  {1, {{ MODKEY,                       XK_Tab}},    view,           {0} },
-  {1, {{ MODKEY,                       XK_c}},      killclient,     {0} },
-  {1, {{ MODKEY,                       XK_t}},      setlayout,      {.v = &layouts[0]} },
-	// { MODKEY,                       XK_f,      setlayout,      {.v = &layouts[1]} },
-  // {1, {{ MODKEY,                       XK_m}},      setlayout,      {.v = &layouts[2]} },
-	// { MODKEY,                       XK_r,      setlayout,      {.v = &layouts[3]} },	
-	// { MODKEY|ShiftMask,             XK_r,      setlayout,      {.v = &layouts[4]} },
-  // {1, {{ MODKEY,                       XK_g}},      setlayout,      {.v = &layouts[5]} },
-	// bottomstack :
-  {1, {{ MODKEY|ShiftMask,                       XK_t}},      setlayout,      {.v = &layouts[6]} },
-  // {1, {{ MODKEY,                       XK_o}},      setlayout,      {.v = &layouts[7]} },
-  // {1, {{ MODKEY,                       XK_n}},      setlayout,      {.v = &layouts[8]} },
-  // {1, {{ MODKEY|ShiftMask,             XK_n}},      setlayout,      {.v = &layouts[9]} },
-	// cyclelayout :
-  {1, {{ ControlMask,					XK_comma}},  cyclelayout,    {.i = -1 } },
-  {1, {{ ControlMask,           		XK_period}}, cyclelayout,    {.i = +1 } },
+  {1, {{ MODKEY,             XK_j}},      focusstack,     {.i = +1 } },
+  {1, {{ MODKEY,             XK_k}},      focusstack,     {.i = -1 } },
+  {1, {{ MODKEY|ShiftMask,   XK_j}},      movestack,      {.i = +1 } },
+  {1, {{ MODKEY|ShiftMask,   XK_k}},      movestack,      {.i = -1 } },
+  {1, {{ MODKEY,             XK_i}},      incnmaster,     {.i = +1 } },
+  {1, {{ MODKEY,             XK_h}},      setmfact,       {.f = -0.05} },
+  {1, {{ MODKEY|ShiftMask,   XK_Tab}},    zoom,           {0} },
+  {1, {{ MODKEY,             XK_Tab}},    view,           {0} },
+  {1, {{ MODKEY,             XK_q}},      killclient,     {0} },
+  {1, {{ MODKEY,             XK_t}},      setlayout,      {.v = &layouts[0]} },
+  {1, {{ MODKEY|ShiftMask,   XK_t}},      setlayout,      {.v = &layouts[6]} },
+  {1, {{ ControlMask,    XK_comma}},  cyclelayout,    {.i = -1 } },
+  {1, {{ ControlMask,    XK_period}}, cyclelayout,    {.i = +1 } },
   {1, {{ MODKEY,                       XK_space}},  setlayout,      {0} },
   {1, {{ MODKEY|ShiftMask,             XK_space}},  togglefloating, {0} },
   {1, {{ MODKEY,                       XK_agrave}}, view,           {.ui = ~0 } },
@@ -225,9 +173,9 @@ static Keychord keychords[] = {
 	TAGKEYS(			XK_4,		3)
 	TAGKEYS(			XK_5,		4)
 	TAGKEYS(			XK_6,		5)
-	// TAGKEYS(			XK_7,		6)
-	// TAGKEYS(			XK_8,		7)
-	// TAGKEYS(			XK_9,		8)
+	TAGKEYS(			XK_7,		6)
+	TAGKEYS(			XK_8,		7)
+	TAGKEYS(			XK_9,		8)
 	{1, {{MODKEY|ShiftMask, XK_q}},					quit,           {1} },
   {1,{{ MODKEY|ControlMask|ShiftMask, XK_q}},      quit,           {0} }, 
 
@@ -248,3 +196,4 @@ static Button buttons[] = {
 	{ ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
 	{ ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
 };
+

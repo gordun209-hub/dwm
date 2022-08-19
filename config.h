@@ -142,9 +142,11 @@ static Keychord keychords[] = {
   {1, {{ MODKEY,            XK_w}},      spawn,          {.v = firefox } },
   {1, {{ MODKEY,            XK_l}},      spawn,          {.v = lf } },
   {1, {{ MODKEY,       XK_Return}},      spawn,          {.v = termcmd } },
+  {1, {{MODKEY,        XK_f}},           togglefullscr,   {0}},
   {1, {{ MODKEY,            XK_a}},      togglebar,      {0} },
   {1, {{ MODKEY,            XK_b}},      spawn, SHCMD("pkill dwmbar-colored && xsetroot -name ' ' ") },
   {1, {{ MODKEY|ShiftMask,  XK_b}},      spawn, SHCMD("dwmbar-colored") },
+  {1, {{ MODKEY|ShiftMask,  XK_s}},      spawn,          {.v = SS } },
 	// focusstack :
   {1, {{ MODKEY,             XK_j}},      focusstack,     {.i = +1 } },
   {1, {{ MODKEY,             XK_k}},      focusstack,     {.i = -1 } },
@@ -196,3 +198,4 @@ static Button buttons[] = {
 	{ ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
 	{ ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
 };
+
