@@ -39,21 +39,6 @@ static const char *fonts[] =
 /* Theme */
 #include "themes/darcula.h"
 
-typedef struct {
-	const char *name;
-	const void *cmd;
-} Sp;
-const char *spcmd1[] = {"st", "-n", "spterm", "-g", "120x34", NULL };
-const char *spcmd2[] = {"st", "-n", "spfm", "-g", "144x41", "-e", "cmus", NULL };
-const char *spcmd8[] = {"st", "-n", "splfub", "-g", "144x41", "-e", "lfub", NULL };
-// const char *spcmd9[] = {"st", "-n", "spnews", "-g", "144x41", "-e", "newsboat", NULL };
-static Sp scratchpads[] = {
-	/* name          cmd  */
-	{"spterm",      spcmd1},
-	{"spranger",    spcmd2},
-	{"splfub",       spcmd8},
-	// {"spnews",       spcmd9},
-};
 
 
 static const char *colors[][3]      = {
