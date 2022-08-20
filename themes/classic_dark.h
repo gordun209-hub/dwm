@@ -1,7 +1,7 @@
-static const char col_bg[]          = "#1e222a";
-static const char col_gray[]        = "#6f737b";
-static const char col_white[]       = "#abb2bf";
-static const char col_border[]      = "#61afef";
+static const char col_bg[]          = "#151515";
+static const char col_gray[]        = "#595959";
+static const char col_white[]       = "#d0D0D0";
+static const char col_border[]      = "#6A9FB5";
 static const char *colors[][3]      = {
 [SchemeNorm]      = { col_gray,    col_bg,     col_bg     },
 [SchemeSel]       = { col_white,   col_bg,     col_border },
