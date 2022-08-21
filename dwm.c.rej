@@ -1,14 +1,6 @@
 --- dwm.c
 +++ dwm.c
-@@ -172,6 +172,7 @@ static void focusstack(const Arg *arg);
- static Atom getatomprop(Client *c, Atom prop);
- static int getrootptr(int *x, int *y);
- static long getstate(Window w);
-+static pid_t getstatusbarpid();
- static int gettextprop(Window w, Atom atom, char *text, unsigned int size);
- static void grabbuttons(Client *c, int focused);
- static void grabkeys(void);
-@@ -206,6 +207,7 @@ static void setup(void);
+@@ -207,6 +208,7 @@ static void setup(void);
  static void seturgent(Client *c, int urg);
  static void showhide(Client *c);
  static void sigchld(int unused);
@@ -16,7 +8,7 @@
  static void spawn(const Arg *arg);
  static void tag(const Arg *arg);
  static void tagmon(const Arg *arg);
-@@ -425,6 +430,7 @@ buttonpress(XEvent *e)
+@@ -426,6 +431,7 @@ buttonpress(XEvent *e)
  	Client *c;
  	Monitor *m;
  	XButtonPressedEvent *ev = &e->xbutton;
@@ -24,7 +16,7 @@
  
  	click = ClkRootWin;
  	/* focus monitor if necessary */
-@@ -443,9 +449,23 @@ buttonpress(XEvent *e)
+@@ -444,9 +450,23 @@ buttonpress(XEvent *e)
  			arg.ui = 1 << i;
  		} else if (ev->x < x + blw)
  			click = ClkLtSymbol;
@@ -50,7 +42,7 @@
  			click = ClkWinTitle;
  	} else if ((c = wintoclient(ev->window))) {
  		focus(c);
-@@ -707,9 +727,24 @@ drawbar(Monitor *m)
+@@ -708,9 +728,24 @@ drawbar(Monitor *m)
  
  	/* draw status first so it can be overdrawn by tags later */
  	if (m == selmon) { /* status is only drawn on selected monitor */
@@ -77,38 +69,7 @@
  	}
  
  	for (c = m->clients; c; c = c->next) {
-@@ -875,6 +910,30 @@ getatomprop(Client *c, Atom prop)
- 	return atom;
- }
- 
-+pid_t
-+getstatusbarpid()
-+{
-+	char buf[32], *str = buf, *c;
-+	FILE *fp;
-+
-+	if (statuspid > 0) {
-+		snprintf(buf, sizeof(buf), "/proc/%u/cmdline", statuspid);
-+		if ((fp = fopen(buf, "r"))) {
-+			fgets(buf, sizeof(buf), fp);
-+			while ((c = strchr(str, '/')))
-+				str = c + 1;
-+			fclose(fp);
-+			if (!strcmp(str, STATUSBAR))
-+				return statuspid;
-+		}
-+	}
-+	if (!(fp = popen("pidof -s "STATUSBAR, "r")))
-+		return -1;
-+	fgets(buf, sizeof(buf), fp);
-+	pclose(fp);
-+	return strtol(buf, NULL, 10);
-+}
-+
- int
- getrootptr(int *x, int *y)
- {
-@@ -1640,6 +1699,20 @@ sigchld(int unused)
+@@ -1665,6 +1724,20 @@ sigchld(int unused)
  	while (0 < waitpid(-1, NULL, WNOHANG));
  }
  
@@ -129,7 +90,7 @@
  void
  spawn(const Arg *arg)
  {
-@@ -1993,8 +2066,25 @@ updatesizehints(Client *c)
+@@ -2018,8 +2091,25 @@ updatesizehints(Client *c)
  void
  updatestatus(void)
  {
