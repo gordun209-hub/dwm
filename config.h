@@ -1,7 +1,14 @@
 /* See LICENSE file for copyright and license details. */
 
+
+/* Constants */
+#define TERMINAL "st"
+#define TERMCLASS "St"
+#define BROWSER "chromium"
 /* appearance */
 static const unsigned int borderpx = 3; /* border pixel of windows */
+
+static const int swallowfloating    = 0;        /* 1 means swallow floating windows by default */
 static const unsigned int snap = 32;    /* snap pixel */
 static const unsigned int gappih = 20;  /* horiz inner gap between windows */
 static const unsigned int gappiv = 20;  /* vert inner gap between windows */
@@ -10,7 +17,8 @@ static const unsigned int gappov = 20; /* vert outer gap between windows and scr
 static int smartgaps =   0; /* 1 means no outer gap when there is only one window */
 static const int showbar = 1;     /* 0 means no bar */
 static const int topbar = 1;      /* 0 means bottom bar */
-static const char *fonts[] = {
+static const int user_bh            = 22;       /* 0 means that dwm will calculate bar height, >= 1 means dwm will user_bh as bar height */
+static  char *fonts[] = {
     /* System Fonts : */
     "JetBrains Mono:style=Bold:size=12:antialias=true:autohint=true",
     //"Fantasque Sans Mono:style=Bold:size=12:antialias=true:autohint=true",
@@ -32,48 +40,61 @@ static const char *fonts[] = {
     // Font Mono:weight=bold:pixelsize=10:antialias=true:hinting=true",
 };
 
-#include "themes/catppuccin.h"
-
 typedef struct {
-  const char *name;
-  const void *cmd;
+	const char *name;
+	const void *cmd;
 } Sp;
-const char *spcmd1[] = {"st", "-n", "spterm", "-g", "120x34", NULL};
-const char *spcmd2[] = {"st",     "-n", "spaud",      "-g",
-                        "120x34", "-e", "pulsemixer", NULL};
-const char *spcmd3[] = {"st",     "-n", "spmus", "-g",
-                        "120x34", "-e", "mocp",  NULL};
+const char *spcmd1[] = {TERMINAL, "-n", "spterm", "-g", "120x34", NULL };
+const char *spcmd2[] = {TERMINAL, "-n", "spcalc", "-f", "monospace:size=16", "-g", "50x20", "-e", "bc", "-lq", NULL };
 static Sp scratchpads[] = {
-    /* name          cmd  */
-    {"spterm", spcmd1},
-    {"spaud", spcmd2},
-    {"spmus", spcmd3},
+	/* name          cmd  */
+	{"spterm",      spcmd1},
+	{"spcalc",      spcmd2},
 };
 
+static const char col_1[]       = "#1e1f29";
+static const char col_2[]       = "#6272a4";
+static const char col_3[]       = "#bd93f9";
+static const char col_4[]       = "#50fa7b";
+static const char col_5[]       = "#44475a";
+static const char *colors[][3]      = {
+	/*               fg         bg         border   */
+	  [SchemeNorm] = { col_3, col_1, col_2 },
+	  [SchemeSel]  = { col_4, col_1, col_4 },
+	  [SchemeStatus]  = { col_3, col_1, col_1 }, // Statusbar right {text,background,not used but cannot be empty}
+	  [SchemeTagsSel]  = { col_1, col_4, col_4 }, // Tagbar left selected {text,background,not used but cannot be empty}
+    [SchemeTagsNorm]  = { col_3, col_1, col_1 }, // Tagbar left unselected {text,background,not used but cannot be empty}
+    [SchemeInfoSel]  = { col_4, col_1, col_4 }, // infobar middle  selected {text,background,not used but cannot be empty}
+    [SchemeInfoNorm]  = { col_3, col_1, col_1 }, // infobar middle  unselected {text,background,not used but cannot be empty}
+};
+
+
+
 /* tagging */
-static const char *tags[] = {" 1 ", " 2 ", " 3 ", " 4 ",
-                             " 5 ", " 6 ", " 7 ", " 8 "};
-static const unsigned int ulinepad =
-    5; /* horizontal padding between the underline and tag */
+
+static const char *tags[] = { "󰲠","󰲢","󰲤","󰲦","󰲨","󰲪"};
 static const unsigned int ulinestroke =
     2; /* thickness / height of the underline */
-static const unsigned int ulinevoffset =
-    0; /* how far above the bottom of the bar the line should appear */
 static const int ulineall =
     0; /* 1 to show underline on all tags, 0 for just the active ones */
 
 static const Rule rules[] = {
-    {"Gimp", NULL, NULL, 0, 1, -1},
-    {"Firefox", NULL, NULL, 1 << 8, 0, -1},
-    {NULL, "spterm", NULL, SPTAG(0), 1, -1},
-    {NULL, "spaud", NULL, SPTAG(1), 1, -1},
-    {NULL, "spmus", NULL, SPTAG(2), 1, -1},
+	/* xprop(1):
+	 *	WM_CLASS(STRING) = instance, class
+	 *	WM_NAME(STRING) = title
+	*/
+	/* class    instance      title       	 tags mask    isfloating   isterminal  noswallow  monitor */
+	{ "Gimp",     NULL,       NULL,       	    1 << 8,       0,           0,         0,        -1 },
+	{ TERMCLASS,  NULL,       NULL,       	    0,            0,           1,         0,        -1 },
+	{ NULL,       NULL,       "Event Tester",   0,            0,           0,         1,        -1 },
+	{ TERMCLASS,      "bg",        NULL,       	    1 << 7,       0,           1,         0,        -1 },
+	{ TERMCLASS,      "spterm",    NULL,       	    SPTAG(0),     1,           1,         0,        -1 },
+	{ TERMCLASS,      "spcalc",    NULL,       	    SPTAG(1),     1,           1,         0,        -1 },
 };
 
 static const float mfact = 0.50; /* factor of master area size [0.05..0.95] */
-static const int nmaster = 1;    /* number of clients in master area */
 static const int resizehints =
-    1; /* 1 means respect size hints in tiled resizals */
+    0; /* 1 means respect size hints in tiled resizals */
 static const int lockfullscreen =
     1; /* 1 will force focus on the fullscreen window */
 
@@ -82,31 +103,37 @@ static const int lockfullscreen =
 #include "vanitygaps.c"
 
 static const Layout layouts[] = {
-    /* symbol     arrange function */
-    {"[]=", tile}, /* first entry is default */
-    {"[M]", monocle},
-    {"[@]", spiral},
-    {"[\\]", dwindle},
-    {"H[]", deck},
-    {"TTT", bstack},
-    {"===", bstackhoriz},
-    {"HHH", grid},
-    {"###", nrowgrid},
-    {"---", horizgrid},
-    {":::", gaplessgrid},
-    {"|M|", centeredmaster},
-    {">M>", centeredfloatingmaster},
-    {"><>", NULL}, /* no layout function means floating behavior */
-    {NULL, NULL},
+	/* symbol     arrange function */
+	{ "[]=",	tile },			/* Default: Master on left, slaves on right */
+	{ "TTT",	bstack },		/* Master on top, slaves on bottom */
+
+	{ "[@]",	spiral },		/* Fibonacci spiral */
+	{ "[\\]",	dwindle },		/* Decreasing in size right and leftward */
+
+	{ "[D]",	deck },			/* Master on left, slaves in monocle-like mode on right */
+	{ "[M]",	monocle },		/* All windows on top of eachother */
+
+	{ "|M|",	centeredmaster },		/* Master in middle, slaves on sides */
+	{ ">M>",	centeredfloatingmaster },	/* Same but master floats */
+
+	{ "><>",	NULL },			/* no layout function means floating behavior */
+	{ NULL,		NULL },
 };
 
-/* key definitions */
 #define MODKEY Mod4Mask
-#define TAGKEYS(KEY, TAG)                                                      \
-  {MODKEY, KEY, view, {.ui = 1 << TAG}},                                       \
-      {MODKEY | ControlMask, KEY, toggleview, {.ui = 1 << TAG}},               \
-      {MODKEY | ShiftMask, KEY, tag, {.ui = 1 << TAG}},                        \
-      {MODKEY | ControlMask | ShiftMask, KEY, toggletag, {.ui = 1 << TAG}},
+#define TAGKEYS(KEY,TAG) \
+	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
+	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
+	{ MODKEY|ShiftMask,             KEY,      tag,            {.ui = 1 << TAG} }, \
+	{ MODKEY|ControlMask|ShiftMask, KEY,      toggletag,      {.ui = 1 << TAG} },
+#define STACKKEYS(MOD,ACTION) \
+	{ MOD,	XK_j,	ACTION##stack,	{.i = INC(+1) } }, \
+	{ MOD,	XK_k,	ACTION##stack,	{.i = INC(-1) } }, \
+	{ MOD,  XK_v,   ACTION##stack,  {.i = 0 } }, \
+	/* { MOD, XK_grave, ACTION##stack, {.i = PREVSEL } }, \ */
+	/* { MOD, XK_a,     ACTION##stack, {.i = 1 } }, \ */
+	/* { MOD, XK_z,     ACTION##stack, {.i = 2 } }, \ */
+	/* { MOD, XK_x,     ACTION##stack, {.i = -1 } }, */
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
 #define SHCMD(cmd)                                                             \
@@ -116,43 +143,75 @@ static const Layout layouts[] = {
 
 #define STATUSBAR "dwmblocks"
 
-#define STATUSBAR "dwmblocks"
+static const unsigned int ulinepad	= 5;	/* horizontal padding between the underline and tag */
+static const unsigned int ulinevoffset	= 0;	/* how far above the bottom of the bar the line should appear */
 
-#define STATUSBAR "dwmblocks"
-
+static const int nmaster     = 1;    /* number of clients in master area */
+#include "shiftview.c"
 /* commands */
-static char dmenumon[2] =
-    "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = {"dmenu_run", "-c", "-l",    "20", "-g",
                                  "2",         "-p", "Run :", NULL};
 static const char *rofiwcmd[] = {"rofi", "-show", "window", NULL};
 static const char *termcmd[] = {"st", NULL};
-static const char *fmcmd[] = {"pcmanfm", NULL};
-static const char *tuifmcmd[] = {"st", "-e", "ranger", NULL};
+static const char *tuifmcmd[] = {"st", "-e", "lf", NULL};
 static const char *webcmd[] = {"chromium", NULL};
 
 static Key keys[] = {
+	STACKKEYS(MODKEY,                          focus)
+	STACKKEYS(MODKEY|ShiftMask,                push)
     // Apps
     {MODKEY,             XK_Return,    spawn,        {.v = termcmd}},
     {MODKEY,             XK_d,         spawn,        {.v = dmenucmd}},
     {MODKEY,             XK_w,         spawn,        {.v = webcmd}},
     {MODKEY,             XK_e,         spawn,        {.v = tuifmcmd}},
     {MODKEY|ShiftMask,   XK_d,         spawn,        {.v = rofiwcmd}},
-    {MODKEY|ShiftMask,   XK_e,         spawn,        {.v = fmcmd}},
     {MODKEY|ShiftMask,   XK_space,     togglefloating,{0}},
-    {ControlMask,        XK_comma,     cyclelayout,  {.i = +1}},
-    {ControlMask,        XK_period,    cyclelayout,  {.i = -1}},
     {MODKEY,             XK_t,         setlayout,    {.v = &layouts[0]}},
     {MODKEY,             XK_f,         togglefullscr,{0}},
     {MODKEY,             XK_b,         togglebar,    {0}},
     {MODKEY|ShiftMask,   XK_Tab,       zoom,         {0}},
     {MODKEY,             XK_h,         setmfact,     {.f = -0.05}},
+    { MODKEY,			XK_a,		togglegaps,	{0} },
+	{ MODKEY|ShiftMask,		XK_a,		defaultgaps,	{0} },
+	{ MODKEY,			XK_s,		togglesticky,	{0} },
+	{ MODKEY,			XK_t,		setlayout,	{.v = &layouts[0]} }, /* tile */
+	{ MODKEY|ShiftMask,		XK_t,		setlayout,	{.v = &layouts[1]} }, /* bstack */
+	{ MODKEY,			XK_y,		setlayout,	{.v = &layouts[2]} }, /* spiral */
+	{ MODKEY|ShiftMask,		XK_y,		setlayout,	{.v = &layouts[3]} }, /* dwindle */
+	{ MODKEY,			XK_u,		setlayout,	{.v = &layouts[4]} }, /* deck */
+	{ MODKEY|ShiftMask,		XK_u,		setlayout,	{.v = &layouts[5]} }, /* monocle */
+	{ MODKEY,			XK_i,		setlayout,	{.v = &layouts[6]} }, /* centeredmaster */
+	{ MODKEY|ShiftMask,		XK_i,		setlayout,	{.v = &layouts[7]} }, /* centeredfloatingmaster */
+	{ MODKEY,			XK_o,		incnmaster,     {.i = +1 } },
+	{ MODKEY|ShiftMask,		XK_o,		incnmaster,     {.i = -1 } },
+	/* { MODKEY|ShiftMask,		XK_s,		spawn,		SHCMD("") }, */
+	{ MODKEY|ShiftMask,		XK_d,		spawn,		{.v = (const char*[]){ "passmenu", NULL } } },
+	{ MODKEY|ShiftMask,		XK_f,		setlayout,	{.v = &layouts[8]} },
+	{ MODKEY,			XK_g,		shiftview,	{ .i = -1 } },
+	{ MODKEY|ShiftMask,		XK_g,		shifttag,	{ .i = -1 } },
+	{ MODKEY,			XK_h,		setmfact,	{.f = -0.05} },
+	/* J and K are automatically bound above in STACKEYS */
+	{ MODKEY,			XK_l,		setmfact,      	{.f = +0.05} },
+	{ MODKEY,			XK_semicolon,	shiftview,	{ .i = 1 } },
+
+	{ MODKEY|ShiftMask,		XK_semicolon,	shifttag,	{ .i = 1 } },
+	/* { MODKEY|ShiftMask,		XK_apostrophe,	spawn,		SHCMD("") }, */
+	{ MODKEY|ShiftMask,		XK_apostrophe,	togglesmartgaps,	{0} },
+
+	{ MODKEY,			XK_z,		incrgaps,	{.i = +3 } },
+	/* { MODKEY|ShiftMask,		XK_z,		spawn,		SHCMD("") }, */
+	{ MODKEY,			XK_x,		incrgaps,	{.i = -3 } },
+	/* { MODKEY|ShiftMask,		XK_x,		spawn,		SHCMD("") }, */
+	{ MODKEY,			XK_c,		spawn,		{.v = (const char*[]){ TERMINAL, "-e", "profanity", NULL } } },
+	/* { MODKEY|ShiftMask,		XK_c,		spawn,		SHCMD("") }, */
+	/* V is automatically bound above in STACKKEYS */
+	{ MODKEY,			XK_b,		togglebar,	{0} },
     {MODKEY,             XK_l,         setmfact,     {.f = +0.05}},
     {MODKEY|ControlMask, XK_v,         incnmaster,   {.i = +1}},
     {MODKEY|ControlMask, XK_h,         incnmaster,   {.i = -1}},
     {MODKEY,             XK_q,         killclient,   {0}},
-    {MODKEY,             XK_j,         focusstack,   {.i = +1}},
-    {MODKEY,             XK_k,         focusstack,   {.i = -1}},
+    // {MODKEY,             XK_j,         focusstack,   {.i = +1}},
+    // {MODKEY,             XK_k,         focusstack,   {.i = -1}},
     {MODKEY|ShiftMask,   XK_q,         quit,         {0}},
     {MODKEY,             XK_comma,     focusmon,     {.i = -1}},
     {MODKEY,             XK_period,    focusmon,     {.i = +1}},
@@ -161,22 +220,6 @@ static Key keys[] = {
     {MODKEY,             XK_p,         togglescratch,{.ui = 0}},
     {MODKEY,             XK_s,         togglescratch,{.ui = 1}},
     {MODKEY,             XK_m,         togglescratch,{.ui = 2}},
-    {MODKEY|Mod1Mask,    XK_u,         incrgaps,     {.i = +1}},
-    {MODKEY|Mod1Mask|ShiftMask, XK_u,  incrgaps,     {.i = -1}},
-    {MODKEY|Mod1Mask, XK_i,            incrigaps,    {.i = +1}},
-    {MODKEY|Mod1Mask|ShiftMask, XK_i,incrigaps,      {.i = -1}},
-    {MODKEY|Mod1Mask,           XK_o,incrogaps,      {.i = +1}},
-    {MODKEY|Mod1Mask|ShiftMask, XK_o,incrogaps,      {.i = -1}},
-    {MODKEY|Mod1Mask, XK_6,            incrihgaps,   {.i = +1}},
-    {MODKEY|Mod1Mask|ShiftMask, XK_6,incrihgaps,     {.i = -1}},
-    {MODKEY|Mod1Mask, XK_7,            incrivgaps,   {.i = +1}},
-    {MODKEY|Mod1Mask|ShiftMask, XK_7,incrivgaps,     {.i = -1}},
-    {MODKEY|Mod1Mask, XK_8,            incrohgaps,   {.i = +1}},
-    {MODKEY|Mod1Mask|ShiftMask, XK_8,incrohgaps,     {.i = -1}},
-    {MODKEY|Mod1Mask, XK_9,            incrovgaps,   {.i = +1}},
-    {MODKEY|Mod1Mask|ShiftMask, XK_9,incrovgaps,     {.i = -1}},
-    {MODKEY|Mod1Mask, XK_0,            togglegaps,   {0}},
-    {MODKEY|Mod1Mask|ShiftMask, XK_0,defaultgaps,    {0}},
     {MODKEY|ControlMask|ShiftMask,XK_q,quit,         {1}},
     TAGKEYS(XK_1, 0)
     TAGKEYS(XK_2, 1)
@@ -189,18 +232,27 @@ static Key keys[] = {
 };
 
 /* button definitions */
-/* click can be ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle,
- * ClkClientWin, or ClkRootWin */
 static Button buttons[] = {
-    {ClkLtSymbol, 0, Button1, setlayout, {0}},
-    {ClkLtSymbol, 0, Button3, setlayout, {.v = &layouts[2]}},
-    {ClkStatusText, 0, Button2, spawn, {.v = termcmd}},
-	{ ClkStatusText,        0,              Button1,        sigstatusbar,   {.i = 1} },//
-	{ ClkStatusText,        0,              Button2,        sigstatusbar,   {.i = 2} },
-{ ClkStatusText,        0,              Button3,        sigstatusbar,   {.i = 3} },
-    {ClkClientWin, MODKEY, Button1, movemouse, {0}},
-    {ClkClientWin, MODKEY, Button2, togglefloating, {0}},
-    {ClkClientWin, MODKEY, Button3, resizemouse, {0}},
-    {ClkTagBar, 0, Button1, view, {0}},
-    {ClkTagBar, 0, Button3, toggleview, {0}},
+	/* click                event mask      button          function        argument */
+#ifndef __OpenBSD__
+	{ ClkWinTitle,          0,              Button2,        zoom,           {0} },
+	{ ClkStatusText,        0,              Button1,        sigdwmblocks,   {.i = 1} },
+	{ ClkStatusText,        0,              Button2,        sigdwmblocks,   {.i = 2} },
+	{ ClkStatusText,        0,              Button3,        sigdwmblocks,   {.i = 3} },
+	{ ClkStatusText,        0,              Button4,        sigdwmblocks,   {.i = 4} },
+	{ ClkStatusText,        0,              Button5,        sigdwmblocks,   {.i = 5} },
+	{ ClkStatusText,        ShiftMask,      Button1,        sigdwmblocks,   {.i = 6} },
+#endif
+//	{ ClkStatusText,        ShiftMask,      Button3,        spawn,          SHCMD(TERMINAL " -e nvim ~/.local/src/dwmblocks/config.h") },
+	{ ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },
+	{ ClkClientWin,         MODKEY,         Button2,        defaultgaps,	{0} },
+	{ ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
+	{ ClkClientWin,		MODKEY,		Button4,	incrgaps,	{.i = +1} },
+	{ ClkClientWin,		MODKEY,		Button5,	incrgaps,	{.i = -1} },
+	{ ClkTagBar,            0,              Button1,        view,           {0} },
+	{ ClkTagBar,            0,              Button3,        toggleview,     {0} },
+	{ ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
+	{ ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
+	{ ClkTagBar,		0,		Button4,	shiftview,	{.i = -1} },
+	{ ClkTagBar,		0,		Button5,	shiftview,	{.i = 1} },
 };
