@@ -1,6 +1,6 @@
 _pkgname=dwm
 pkgname=$_pkgname-larbs-git
-pkgver=6.2.r1905.2444423
+pkgver=6.2.r1888.0ac09e0
 pkgrel=1
 pkgdesc="Luke's build of dwm"
 url=https://github.com/LukeSmithxyz/dwm
