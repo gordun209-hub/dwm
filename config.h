@@ -17,9 +17,9 @@ static const unsigned int gappov = 30; /* vert outer gap between windows and scr
 static int smartgaps =   0; /* 1 means no outer gap when there is only one window */
 static const int showbar = 1;     /* 0 means no bar */
 static const int topbar = 1;      /* 0 means bottom bar */
-static const int user_bh            = 32;       /* 0 means that dwm will calculate bar height, >= 1 means dwm will user_bh as bar height */
+static const int user_bh            = 35;       /* 0 means that dwm will calculate bar height, >= 1 means dwm will user_bh as bar height */
 static const  char *fonts[] = {
-    "JetBrains Mono:style=Bold:size=12:antialias=true:autohint=true",
+    "MonoLisa:style=Bold:size=12:antialias=true:autohint=true",
     "JoyPixels:size=10:antialias=true:autohint=true",
     "Font Awesome 6 Free-Solid-900:pixelsize=20", "fontawesome:pixelsize=14",
     "Font Awesome 6 Free-Regular-400:pixelsize=14",
@@ -30,11 +30,10 @@ static const  char *fonts[] = {
     "Sanskrit2003:pixelsize=20:antialias=true:autohint=true",
     "JetBrainsMono Nerd Font:style=Bold:size=20:antialias=true:autohint=true",
 };
-
-static const char col_1[]       = "#101010";
-static const char col_2[]       = "#101010";
-static const char col_3[]       = "#d7d7d7";
-static const char col_4[]       = "#b91e2e";
+static const char col_1[]       = "#1d2021";
+static const char col_2[]       = "#1d2021";
+static const char col_3[]       = "#dfbf8e";
+static const char col_4[]       = "#ea6962";
 static const char col_cyan[]        = "#202020";
 static const char *colors[][3]      = {
 	/*               fg         bg         border   */
@@ -47,7 +46,6 @@ static const char *colors[][3]      = {
     [SchemeInfoNorm]  = { col_3, col_1, col_1 }, // infobar middle  unselected {text,background,not used but cannot be empty}
 };
 
-
 typedef struct {
 	const char *name;
 	const void *cmd;
@@ -59,6 +57,7 @@ static Sp scratchpads[] = {
 	{"spterm",      spcmd1},
 	{"spcalc",      spcmd2},
 };/* tagging */
+
 
 static const char *tags[] = { "󰲠","󰲢","󰲤","󰲦","󰲨","󰲪"};
 static const Rule rules[] = {
@@ -121,7 +120,7 @@ static const int ulineall = 0;	/* 1 to show underline on all tags, 0 for just th
 
 static const float mfact     = 0.50; /* factor of master area size [0.05..0.95] */
 static const int nmaster     = 1;    /* number of clients in master area */
-static const int resizehints = 0;    /* 1 means respect size hints in tiled resizals */
+static const int resizehints = 1;    /* 1 means respect size hints in tiled resizals */
 static const int lockfullscreen = 1; /* 1 will force focus on the fullscreen window */
 
 /* commands */
@@ -137,7 +136,7 @@ STACKKEYS(MODKEY,                          focus)
 	STACKKEYS(MODKEY|ShiftMask,                push)
     // Apps
     {MODKEY,             XK_Return,    spawn,        {.v = termcmd}},
-    {MODKEY,             XK_d,         spawn,        {.v = dmenucmd}},
+	  { MODKEY,			XK_d,		spawn,          {.v = (const char*[]){ "dmenu_run", NULL } } },
     {MODKEY,             XK_w,         spawn,        {.v = webcmd}},
     {MODKEY,             XK_e,         spawn,        {.v = tuifmcmd}},
     {MODKEY|ShiftMask,   XK_d,         spawn,        {.v = rofiwcmd}},
@@ -202,14 +201,28 @@ STACKKEYS(MODKEY,                          focus)
 /* click can be ClkTagBar, ClkLtSymbol, ClkStatusText, ClkWinTitle,
  * ClkClientWin, or ClkRootWin */
 static Button buttons[] = {
-    {ClkLtSymbol, 0, Button1, setlayout, {0}},
-    {ClkLtSymbol, 0, Button3, setlayout, {.v = &layouts[2]}},
-	{ ClkStatusText,        0,              Button1,        sigdwmblocks,   {.i = 1} },//
+	/* click                event mask      button          function        argument */
+#ifndef __OpenBSD__
+	{ ClkWinTitle,          0,              Button2,        zoom,           {0} },
+	{ ClkStatusText,        0,              Button1,        sigdwmblocks,   {.i = 1} },
 	{ ClkStatusText,        0,              Button2,        sigdwmblocks,   {.i = 2} },
-{ ClkStatusText,        0,              Button3,        sigdwmblocks,   {.i = 3} },
-    {ClkClientWin, MODKEY, Button1, movemouse, {0}},
-    {ClkClientWin, MODKEY, Button2, togglefloating, {0}},
-    {ClkClientWin, MODKEY, Button3, resizemouse, {0}},
-    {ClkTagBar, 0, Button1, view, {0}},
-    {ClkTagBar, 0, Button3, toggleview, {0}},
+	{ ClkStatusText,        0,              Button3,        sigdwmblocks,   {.i = 3} },
+	{ ClkStatusText,        0,              Button4,        sigdwmblocks,   {.i = 4} },
+	{ ClkStatusText,        0,              Button5,        sigdwmblocks,   {.i = 5} },
+	{ ClkStatusText,        ShiftMask,      Button1,        sigdwmblocks,   {.i = 6} },
+#endif
+	{ ClkStatusText,        ShiftMask,      Button3,        spawn,          SHCMD(TERMINAL " -e nvim ~/.local/src/dwmblocks/config.h") },
+	{ ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },
+	{ ClkClientWin,         MODKEY,         Button2,        defaultgaps,	{0} },
+	{ ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
+
+	{ ClkClientWin,		MODKEY,		Button4,	incrgaps,	{.i = +1} },
+	{ ClkClientWin,		MODKEY,		Button5,	incrgaps,	{.i = -1} },
+	{ ClkTagBar,            0,              Button1,        view,           {0} },
+	{ ClkTagBar,            0,              Button3,        toggleview,     {0} },
+	{ ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
+	{ ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
+	{ ClkTagBar,		0,		Button4,	shiftview,	{.i = -1} },
+	{ ClkTagBar,		0,		Button5,	shiftview,	{.i = 1} },
+	{ ClkRootWin,		0,		Button2,	togglebar,	{0} },
 };
