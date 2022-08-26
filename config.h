@@ -3,21 +3,21 @@
 
 
 /* Constants */
-#define TERMINAL "st"
-#define TERMCLASS "St"
+#define TERMINAL "alacritty"
+#define TERMCLASS "Alacritty"
 #define BROWSER "librewolf"
 /* appearance */
 static const unsigned int borderpx = 3; /* border pixel of windows */
 static int swallowfloating    = 0;        /* 1 means swallow floating windows by default */
 static const unsigned int snap = 32;    /* snap pixel */
-static const unsigned int gappih = 20;  /* horiz inner gap between windows */
+static const unsigned int gappih = 10;  /* horiz inner gap between windows */
 static const unsigned int gappiv = 10;  /* vert inner gap between windows */
-static const unsigned int gappoh =    10; /* horiz outer gap between windows and screen edge */
-static const unsigned int gappov = 30; /* vert outer gap between windows and screen edge */
+static const unsigned int gappoh = 20; /* horiz outer gap between windows and screen edge */
+static const unsigned int gappov = 20; /* vert outer gap between windows and screen edge */
 static int smartgaps =   0; /* 1 means no outer gap when there is only one window */
 static const int showbar = 1;     /* 0 means no bar */
 static const int topbar = 1;      /* 0 means bottom bar */
-static const int user_bh            = 35;       /* 0 means that dwm will calculate bar height, >= 1 means dwm will user_bh as bar height */
+static const int user_bh            = 25;       /* 0 means that dwm will calculate bar height, >= 1 means dwm will user_bh as bar height */
 static const  char *fonts[] = {
     "MonoLisa:style=Bold:size=12:antialias=true:autohint=true",
     "JoyPixels:size=10:antialias=true:autohint=true",
@@ -35,7 +35,7 @@ static const char col_2[]       = "#1d2021";
 static const char col_3[]       = "#ebdbb2";
 static const char col_4[]       = "#d79921";
 static const char col_cyan[]        = "#202020";
-static const char *colors[][3]      = {
+static const char *colors[][8]      = {
 	/*               fg         bg         border   */
         [SchemeNorm] = { col_3, col_2, col_1 },
 	[SchemeSel]  = { col_2, col_4,  col_4  },
@@ -58,8 +58,7 @@ static Sp scratchpads[] = {
 	{"spcalc",      spcmd2},
 };/* tagging */
 
-
-static const char *tags[] = { "󰲠","󰲢","󰲤","󰲦","󰲨","󰲪"};
+static const char *tags[] = { "", "", "", "", "", "", "7", "8", "9" };
 static const Rule rules[] = {
     {"Gimp", NULL, NULL, 0, 1, -1},
     {"Firefox", NULL, NULL, 1 << 8, 0, -1},
@@ -127,8 +126,8 @@ static const int lockfullscreen = 1; /* 1 will force focus on the fullscreen win
 static const char *dmenucmd[] = {"dmenu_run", "-c", "-l",    "20", "-g",
                                  "2",         "-p", "Run :", NULL};
 static const char *rofiwcmd[] = {"rofi", "-show", "window", NULL};
-static const char *termcmd[] = {"st", NULL};
-static const char *tuifmcmd[] = {"st", "-e", "lf", NULL};
+static const char *termcmd[] = {"alacritty", NULL};
+static const char *tuifmcmd[] = {"alacritty", "-e", "lf", NULL};
 static const char *webcmd[] = {"chromium", NULL};
 
 static Key keys[] = {
