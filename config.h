@@ -30,15 +30,15 @@ static const  char *fonts[] = {
     "Sanskrit2003:pixelsize=20:antialias=true:autohint=true",
     "JetBrainsMono Nerd Font:style=Bold:size=20:antialias=true:autohint=true",
 };
-static const char col_1[]       = "#1d2021";
+static const char col_1[]       = "#504945";
 static const char col_2[]       = "#1d2021";
-static const char col_3[]       = "#dfbf8e";
-static const char col_4[]       = "#ea6962";
+static const char col_3[]       = "#ebdbb2";
+static const char col_4[]       = "#d79921";
 static const char col_cyan[]        = "#202020";
 static const char *colors[][3]      = {
 	/*               fg         bg         border   */
-	  [SchemeNorm] = { col_3, col_1, col_2 },
-	  [SchemeSel]  = { col_4, col_1, col_4 },
+        [SchemeNorm] = { col_3, col_2, col_1 },
+	[SchemeSel]  = { col_2, col_4,  col_4  },
 	  [SchemeStatus]  = { col_3, col_1, col_1 }, // Statusbar right {text,background,not used but cannot be empty}
 	  [SchemeTagsSel]  = { col_1, col_4, col_4 }, // Tagbar left selected {text,background,not used but cannot be empty}
     [SchemeTagsNorm]  = { col_3, col_1, col_1 }, // Tagbar left unselected {text,background,not used but cannot be empty}
@@ -139,8 +139,10 @@ STACKKEYS(MODKEY,                          focus)
 	  { MODKEY,			XK_d,		spawn,          {.v = (const char*[]){ "dmenu_run", NULL } } },
     {MODKEY,             XK_w,         spawn,        {.v = webcmd}},
     {MODKEY,             XK_e,         spawn,        {.v = tuifmcmd}},
+    {MODKEY|ShiftMask,             XK_h,      spawn,          SHCMD("flameshot gui") },
     {MODKEY|ShiftMask,   XK_d,         spawn,        {.v = rofiwcmd}},
     {MODKEY|ShiftMask,   XK_space,     togglefloating,{0}},
+    {MODKEY,                       XK_w,      spawn,          SHCMD("firefox") },
     {MODKEY,             XK_t,         setlayout,    {.v = &layouts[0]}},
     {MODKEY,             XK_b,         togglebar,    {0}},
     {MODKEY|ShiftMask,   XK_Tab,       zoom,         {0}},
