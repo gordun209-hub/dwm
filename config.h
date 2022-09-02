@@ -3,8 +3,8 @@
 
 
 /* Constants */
-#define TERMINAL "alacritty"
-#define TERMCLASS "Alacritty"
+#define TERMINAL "st"
+#define TERMCLASS "St"
 #define BROWSER "librewolf"
 /* appearance */
 static const unsigned int borderpx = 3; /* border pixel of windows */
@@ -30,20 +30,21 @@ static const  char *fonts[] = {
     "Sanskrit2003:pixelsize=20:antialias=true:autohint=true",
     "JetBrainsMono Nerd Font:style=Bold:size=20:antialias=true:autohint=true",
 };
-static const char col_1[]       = "#504945";
-static const char col_2[]       = "#1d2021";
-static const char col_3[]       = "#ebdbb2";
-static const char col_4[]       = "#d79921";
-static const char col_cyan[]        = "#202020";
-static const char *colors[][8]      = {
-	/*               fg         bg         border   */
-        [SchemeNorm] = { col_3, col_2, col_1 },
-	[SchemeSel]  = { col_2, col_4,  col_4  },
-	  [SchemeStatus]  = { col_3, col_1, col_1 }, // Statusbar right {text,background,not used but cannot be empty}
-	  [SchemeTagsSel]  = { col_1, col_4, col_4 }, // Tagbar left selected {text,background,not used but cannot be empty}
-    [SchemeTagsNorm]  = { col_3, col_1, col_1 }, // Tagbar left unselected {text,background,not used but cannot be empty}
-    [SchemeInfoSel]  = { col_4, col_1, col_4 }, // infobar middle  selected {text,background,not used but cannot be empty}
-    [SchemeInfoNorm]  = { col_3, col_1, col_1 }, // infobar middle  unselected {text,background,not used but cannot be empty}
+
+//
+
+static const char col_bg[]          = "#11121D";
+static const char col_gray[]        = "#4b4c57";
+static const char col_white[]       = "#c0caf5";
+static const char col_border[]      = "#7199ee";
+static const char *colors[][3]      = {
+[SchemeNorm]      = { col_gray,    col_bg,     col_bg     },
+[SchemeSel]       = { col_white,   col_bg,     col_border },
+[SchemeStatus]    = { col_white,   col_bg,   "#000000"  }, // Statusbar right {text,background,not used but cannot be empty}
+[SchemeTagsSel]   = { col_white,   col_bg, "#000000"  }, // Tagbar left selected {text,background,not used but cannot be empty}
+[SchemeTagsNorm]  = { col_gray,   col_bg,   "#000000"  }, // Tagbar left unselected {text,background,not used but cannot be empty}
+[SchemeInfoSel]   = { col_gray,   col_bg, "#000000"  }, // infobar middle  selected {text,background,not used but cannot be empty}
+[SchemeInfoNorm]  = { col_gray,   col_bg,   "#000000"  }, // infobar middle  unselected {text,background,not used but cannot be empty}
 };
 
 typedef struct {
@@ -126,8 +127,8 @@ static const int lockfullscreen = 1; /* 1 will force focus on the fullscreen win
 static const char *dmenucmd[] = {"dmenu_run", "-c", "-l",    "20", "-g",
                                  "2",         "-p", "Run :", NULL};
 static const char *rofiwcmd[] = {"rofi", "-show", "window", NULL};
-static const char *termcmd[] = {"alacritty", NULL};
-static const char *tuifmcmd[] = {"alacritty", "-e", "lf", NULL};
+static const char *termcmd[] = {"st", NULL};
+static const char *tuifmcmd[] = {"st", "-e", "lf", NULL};
 static const char *webcmd[] = {"chromium", NULL};
 
 static Key keys[] = {
