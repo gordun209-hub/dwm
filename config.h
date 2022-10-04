@@ -37,6 +37,7 @@ static const char col_bg[]          = "#11121D";
 static const char col_gray[]        = "#4b4c57";
 static const char col_white[]       = "#c0caf5";
 static const char col_border[]      = "#7199ee";
+
 static const char *colors[][3]      = {
 [SchemeNorm]      = { col_gray,    col_bg,     col_bg     },
 [SchemeSel]       = { col_white,   col_bg,     col_border },
@@ -213,7 +214,7 @@ static Button buttons[] = {
 	{ ClkStatusText,        0,              Button5,        sigdwmblocks,   {.i = 5} },
 	{ ClkStatusText,        ShiftMask,      Button1,        sigdwmblocks,   {.i = 6} },
 #endif
-	{ ClkStatusText,        ShiftMask,      Button3,        spawn,          SHCMD(TERMINAL " -e nvim ~/.local/src/dwmblocks/config.h") },
+//	{ ClkStatusText,        ShiftMask,      Button3,        spawn,          SHCMD(TERMINAL " -e nvim ~/.local/src/dwmblocks/config.h") },
 	{ ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },
 	{ ClkClientWin,         MODKEY,         Button2,        defaultgaps,	{0} },
 	{ ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
